@@ -1,1 +1,1 @@
-Z SIP is intended as an embeddable SIP parser written in zig
+z_sip is intended as an embeddable SIP parser written in zig
