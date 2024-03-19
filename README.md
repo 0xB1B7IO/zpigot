@@ -1,1 +1,1 @@
-z_sip is intended as an embeddable SIP parser written in zig
+some experiments based on zigs std http implementation 
