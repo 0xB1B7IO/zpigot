@@ -6,25 +6,6 @@ const Message = struct {
     start_line: (RequestLine || StatusLine),
     headers: []const []const u8,
     body: []const u8,
-
-    pub fn toString(self: Message) ![]const u8 {
-        var s = std.fmt.allocPrint("{}\r\n", self.start_line);
-        if (s == null) {
-            return null;
-        }
-        for (self.headers) |header| {
-            if (std.fmt.fmtPrint(&s, "{}: {}\r\n", header) == null) {
-                return null;
-            }
-        }
-        if (std.fmt.fmtPrint(&s, "\r\n") == null) {
-            return null;
-        }
-        if (std.fmt.fmtPrint(&s, "{}", self.body) == null) {
-            return null;
-        }
-        return s;
-    }
 };
 
 pub const Version = enum { @"SIP/2.0" };
