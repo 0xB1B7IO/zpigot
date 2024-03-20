@@ -2,29 +2,12 @@ const std = @import("std");
 const mem = @import("mem");
 const builtin = @import("builtin");
 
+const Uri = @import("./message/Uri.zig");
+
 const Message = struct {
     start_line: (RequestLine || StatusLine),
-    headers: []const []const u8,
+    headers: []Header,
     body: []const u8,
-
-    pub fn toString(self: Message) ![]const u8 {
-        var s = std.fmt.allocPrint("{}\r\n", self.start_line);
-        if (s == null) {
-            return null;
-        }
-        for (self.headers) |header| {
-            if (std.fmt.fmtPrint(&s, "{}: {}\r\n", header) == null) {
-                return null;
-            }
-        }
-        if (std.fmt.fmtPrint(&s, "\r\n") == null) {
-            return null;
-        }
-        if (std.fmt.fmtPrint(&s, "{}", self.body) == null) {
-            return null;
-        }
-        return s;
-    }
 };
 
 pub const Version = enum { @"SIP/2.0" };
@@ -33,22 +16,11 @@ const RequestLine = struct {
     method: Method,
     request_uri: []const u8,
     version: Version,
-
-    pub fn toString(
-        method: Method,
-        request_uri: []const u8,
-        version: Version) ![]const u8 {
-        return std.fmt.allocPrint("{} {} {}", method, request_uri, version);
-    }
 };
 
 const StatusLine = struct {
     version: []const u8,
     status: Status,
-
-    pub fn toString(version: []const u8, status: Status) ![]const u8 {
-        return std.fmt.allocPrint("{} {}", version, status);
-    }
 };
 
 const Method = enum {
@@ -71,16 +43,31 @@ const Method = enum {
     UPDATE
 };
 
-const tag = struct {
-    value: []const u8,
+const From = struct {
+    display: ?[]const u8,
+    from_uri: ?[]const u8,
+    tag: ?[]const u8,
+};
+
+const To = struct {
+    display: ?[]const u8,
+    to_uri: ?[]const u8,
+    tag: ?[]const u8,
+};
+
+const Via = struct {
+    version: Version,
+    transport: Transport,
+    sent_by: []const u8,
+    branch: ?branch,
+    received: ?[]const u8,
+    rport: ?u16,
 };
 
 const branch = struct {
     value: []const u8,
 
-    pub fn init() branch {
-        return branch{ .value = mem.alloc(u8, 32) };
-    }
+    // todo, init, deinit
 };
 
 const Transport = enum {
@@ -92,6 +79,7 @@ const Transport = enum {
     sctp,
     tls_sctp,
 
+    // todo: tests for these
     pub fn toString(self: Transport) ![]const u8 {
         return switch (self) {
             .udp => "UDP", // RFC3261

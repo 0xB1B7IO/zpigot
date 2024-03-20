@@ -5,8 +5,8 @@ const std = @import("std");
 const ALlocator = std.mem.Allocator;
 
 const scheme = enum {
-    sip = "sip",
-    sips = "sips"
+    sip,
+    sips,
 };
 
 scheme: scheme,
@@ -16,6 +16,4 @@ parameters: []const u8,
 headers: ?[]const u8 = null,
 host: []const u8,
 port: ?u16 = null,
-
-
 
