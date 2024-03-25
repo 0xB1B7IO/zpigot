@@ -66,8 +66,6 @@ const Via = struct {
 
 const branch = struct {
     value: []const u8,
-
-    // todo, init, deinit
 };
 
 const Transport = enum {
@@ -79,7 +77,6 @@ const Transport = enum {
     sctp,
     tls_sctp,
 
-    // todo: tests for these
     pub fn toString(self: Transport) ![]const u8 {
         return switch (self) {
             .udp => "UDP", // RFC3261
@@ -171,14 +168,6 @@ const Status = enum(u10) {
     not_acceptable_anywhere = 606,
 
     _,
-
-    pub fn parse(s: []const u8) u64 {
-        var x: u64 = 0;
-        const len = @min(
-            s.len, @sizeOf(@TypeOf(x)));
-        @memcpy(std.mem.asBytes(&x)[0..len], s[0..len]);
-        return x;
-    }
 
     pub fn phrase(self: Status) ?[]const u8 {
         return switch (self) {
